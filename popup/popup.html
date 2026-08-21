@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- CSP: solo recursos propios, sin inline scripts -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <title>JSLoader</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header__title">
+      <img src="../icons/icon48.png" alt="JSLoader" class="header__icon" />
+      <h1>JSLoader</h1>
+    </div>
+    <div class="header__actions">
+      <button id="btn-panel" class="btn btn--ghost btn--sm" title="Administrar todos los scripts">⚙️ Ver todos</button>
+      <button id="btn-new" class="btn btn--primary btn--sm" title="Nuevo script para esta URL">+ Nuevo</button>
+    </div>
+  </header>
+
+  <section class="url-badge" id="current-url-section">
+    <span class="url-badge__label">URL activa:</span>
+    <span class="url-badge__url" id="current-url">Cargando…</span>
+  </section>
+
+  <main class="scripts-list" id="scripts-list">
+    <!-- Scripts se renderizan dinámicamente desde popup.js -->
+  </main>
+
+  <footer class="footer" id="empty-state" hidden>
+    <p>No hay scripts para esta URL.</p>
+    <button id="btn-new-empty" class="btn btn--primary">Crear primer script</button>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

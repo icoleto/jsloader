@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <title>Editor de Script — JSLoader</title>
+  <link rel="stylesheet" href="editor.css" />
+</head>
+<body>
+  <header class="header">
+    <button id="btn-back" class="btn btn--ghost" title="Volver">← Volver</button>
+    <h1 id="page-title">Nuevo Script</h1>
+    <button id="btn-save" class="btn btn--primary">💾 Guardar</button>
+  </header>
+
+  <main class="editor-main">
+    <div class="field">
+      <label class="field__label" for="input-name">Nombre del script</label>
+      <input
+        id="input-name"
+        class="field__input"
+        type="text"
+        maxlength="80"
+        placeholder="Ej: Ocultar banners"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="input-url">
+        URL asociada
+        <span class="field__hint">(solo se ejecutará en esta URL exacta)</span>
+      </label>
+      <input
+        id="input-url"
+        class="field__input"
+        type="url"
+        maxlength="500"
+        placeholder="https://ejemplo.com/pagina"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="input-delay">
+        Delay de ejecución
+        <span class="field__hint">(segundos a esperar tras cargar la página, útil para SPAs como PowerBI)</span>
+      </label>
+      <input
+        id="input-delay"
+        class="field__input field__input--short"
+        type="number"
+        min="0"
+        max="60"
+        step="1"
+        value="0"
+        placeholder="0"
+      />
+    </div>
+
+    <div class="field field--code">
+      <label class="field__label" for="input-code">
+        Código JavaScript
+        <span class="field__hint">(se ejecuta cuando el DOM esté listo)</span>
+      </label>
+      <div class="code-editor">
+        <div class="code-editor__lines" id="line-numbers" aria-hidden="true"></div>
+        <textarea
+          id="input-code"
+          class="code-editor__textarea"
+          spellcheck="false"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          placeholder="// Tu código JavaScript aquí&#10;document.querySelector('.banner')?.remove();"
+        ></textarea>
+      </div>
+    </div>
+
+    <p class="error-msg" id="error-msg" hidden></p>
+  </main>
+
+  <script src="editor.js"></script>
+</body>
+</html>

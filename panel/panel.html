@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <title>JSLoader — Panel de administración</title>
+  <link rel="stylesheet" href="panel.css" />
+</head>
+<body>
+  <div class="layout">
+
+    <!-- ── Sidebar ───────────────────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <img src="../icons/icon48.png" alt="JSLoader" class="sidebar__logo" />
+        <span class="sidebar__name">JSLoader</span>
+      </div>
+
+      <nav class="sidebar__nav">
+        <button class="nav-item nav-item--active" data-view="scripts">
+          <span class="nav-item__icon">📋</span> Mis Scripts
+        </button>
+        <button class="nav-item" data-view="new">
+          <span class="nav-item__icon">✏️</span> Nuevo Script
+        </button>
+      </nav>
+
+      <div class="sidebar__stats" id="stats">
+        <div class="stat">
+          <span class="stat__value" id="stat-total">0</span>
+          <span class="stat__label">Scripts</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value" id="stat-active">0</span>
+          <span class="stat__label">Activos</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value" id="stat-urls">0</span>
+          <span class="stat__label">URLs</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Main ──────────────────────────────────────────────────────────── -->
+    <main class="main">
+
+      <!-- Vista: listado de scripts -->
+      <section class="view view--active" id="view-scripts">
+        <header class="view__header">
+          <h1 class="view__title">Mis Scripts</h1>
+          <div class="view__actions">
+            <div class="search-box">
+              <span class="search-box__icon">🔍</span>
+              <input
+                id="search-input"
+                class="search-box__input"
+                type="search"
+                placeholder="Buscar por nombre o URL…"
+                autocomplete="off"
+              />
+            </div>
+            <button id="btn-new-from-list" class="btn btn--primary">+ Nuevo Script</button>
+          </div>
+        </header>
+
+        <div id="groups-container" class="groups-container">
+          <!-- Grupos por URL renderizados dinámicamente -->
+        </div>
+
+        <div id="empty-all" class="empty-state" hidden>
+          <div class="empty-state__icon">📭</div>
+          <p class="empty-state__text">No tienes ningún script guardado todavía.</p>
+          <button id="btn-new-empty-all" class="btn btn--primary">Crear primer script</button>
+        </div>
+
+        <div id="empty-search" class="empty-state" hidden>
+          <div class="empty-state__icon">🔎</div>
+          <p class="empty-state__text">Ningún script coincide con tu búsqueda.</p>
+        </div>
+      </section>
+
+      <!-- Vista: nuevo/editar script inline -->
+      <section class="view" id="view-new">
+        <header class="view__header">
+          <button id="btn-back-new" class="btn btn--ghost">← Volver</button>
+          <h1 class="view__title" id="panel-editor-title">Nuevo Script</h1>
+          <button id="btn-save-panel" class="btn btn--primary">💾 Guardar</button>
+        </header>
+
+        <div class="panel-form">
+          <div class="field">
+            <label class="field__label" for="pe-name">Nombre del script</label>
+            <input id="pe-name" class="field__input" type="text" maxlength="80"
+                   placeholder="Ej: Ocultar banners" autocomplete="off" spellcheck="false" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="pe-url">
+              URL asociada
+              <span class="field__hint">(solo se ejecutará en esta URL exacta)</span>
+            </label>
+            <input id="pe-url" class="field__input" type="url" maxlength="500"
+                   list="url-suggestions" placeholder="https://ejemplo.com/pagina"
+                   autocomplete="off" spellcheck="false" />
+            <datalist id="url-suggestions">
+              <!-- Opciones inyectadas desde panel.js -->
+            </datalist>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="pe-delay">
+              Delay de ejecución
+              <span class="field__hint">(segundos a esperar tras cargar — útil para SPAs)</span>
+            </label>
+            <input id="pe-delay" class="field__input field__input--short" type="number"
+                   min="0" max="60" step="1" value="0" placeholder="0" />
+          </div>
+
+          <div class="field field--code">
+            <label class="field__label" for="pe-code">
+              Código JavaScript
+              <span class="field__hint">(se ejecuta cuando el DOM esté listo; <code>waitForElement(selector)</code> disponible)</span>
+            </label>
+            <div class="code-editor">
+              <div class="code-editor__lines" id="pe-line-numbers" aria-hidden="true"></div>
+              <textarea id="pe-code" class="code-editor__textarea" spellcheck="false"
+                        autocomplete="off" autocorrect="off" autocapitalize="off"
+                        placeholder="// Tu código JavaScript aquí"></textarea>
+            </div>
+          </div>
+
+          <p class="error-msg" id="pe-error" hidden></p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="panel.js"></script>
+</body>
+</html>
