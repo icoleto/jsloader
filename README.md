@@ -1,17 +1,52 @@
 # JSLoader
 
-Extensión de Chrome (Manifest V3) para guardar, activar/desactivar y ejecutar scripts JavaScript por URL exacta.
+JSLoader is a Chrome extension (Manifest V3) for storing and running custom JavaScript snippets per exact URL.
 
-## Qué hace
+It is designed for power users who need lightweight page automation, DOM tweaks, and workflow shortcuts on specific websites.
 
-- Ejecuta scripts por URL cuando la página termina de cargar.
-- Almacenamiento local en `chrome.storage.local`.
-- Activación/desactivación por script.
-- Delay configurable por script (útil para SPAs como Power BI).
-- Helper global `waitForElement(selector, timeoutMs)` disponible en scripts.
-- Panel global para administrar todos los scripts por URL.
+---
 
-## Estructura del proyecto
+## Table of Contents
+
+- [Features](#features)
+- [How It Works](#how-it-works)
+- [Project Structure](#project-structure)
+- [Installation (Developer Mode)](#installation-developer-mode)
+- [Usage](#usage)
+- [Script Runtime Helpers](#script-runtime-helpers)
+- [Permissions](#permissions)
+- [Security Model](#security-model)
+- [Development Notes](#development-notes)
+- [Troubleshooting](#troubleshooting)
+
+---
+
+## Features
+
+- Per-URL script management (exact URL matching).
+- Enable/disable scripts individually.
+- Configurable execution delay per script (useful for SPAs such as Power BI).
+- Global management panel with:
+  - URL-grouped script list
+  - Search by script name or URL
+  - Inline edit/delete/toggle actions
+- Contextual popup for quick actions on the current page.
+- Local storage with `chrome.storage.local` (no external backend).
+- Built-in runtime helper for waiting on dynamically rendered elements.
+
+---
+
+## How It Works
+
+1. JSLoader monitors tab updates.
+2. When a page load completes, it finds active scripts matching that exact URL.
+3. Each script is injected through `chrome.scripting.executeScript` in `world: "MAIN"`.
+4. Optional per-script delay is applied before execution.
+5. Scripts can use a shared helper (`waitForElement`) to handle late-rendered DOM.
+
+---
+
+## Project Structure
 
 ```text
 jsloader/
@@ -38,40 +73,104 @@ jsloader/
     └── icon128.png
 ```
 
-## Instalación manual en Chrome
+---
 
-1. Abre `chrome://extensions`.
-2. Activa **Modo de desarrollador**.
-3. Pulsa **Cargar descomprimida**.
-4. Selecciona la carpeta raíz del proyecto (`jsloader`).
-5. (Opcional) Fija la extensión con el icono de puzzle para tenerla visible.
+## Installation (Developer Mode)
 
-Cada vez que cambies código:
+1. Open Chrome and go to `chrome://extensions`.
+2. Enable **Developer mode**.
+3. Click **Load unpacked**.
+4. Select the project root folder (`jsloader`).
+5. (Optional) Pin **JSLoader** from the extensions menu for faster access.
 
-1. Vuelve a `chrome://extensions`.
-2. Pulsa **Actualizar** en la tarjeta de JSLoader.
+After any local code change:
 
-## Uso rápido
+1. Go back to `chrome://extensions`.
+2. Click **Reload** on JSLoader.
 
-1. Abre una web objetivo.
-2. Haz clic en el icono de JSLoader.
-3. Pulsa **+ Nuevo** y crea tu script para esa URL.
-4. Activa/desactiva desde el popup o desde **Ver todos** (panel global).
+---
 
-Ejemplo con espera de elemento:
+## Usage
+
+### Quick flow (from current page)
+
+1. Open the target website page.
+2. Click the JSLoader toolbar icon.
+3. Click **+ New** to create a script prefilled with the current URL.
+4. Save and reload the page.
+
+### Global flow (manage everything)
+
+1. Open the popup.
+2. Click **View all**.
+3. Manage scripts grouped by URL:
+   - Toggle on/off
+   - Edit
+   - Delete
+   - Search
+
+---
+
+## Script Runtime Helpers
+
+`waitForElement(selector, timeoutMs = 15000)` is available in user scripts.
+
+Example:
 
 ```js
-const filtro = await waitForElement('[data-testid="slicer-container"]', 20000);
-filtro.click();
+const slicer = await waitForElement('[data-testid="slicer-container"]', 20000);
+slicer.click();
 ```
 
-## Requisitos
+This is recommended for dynamic apps where key elements appear after initial page load.
 
-- Google Chrome (actual).
-- Permiso para cargar extensiones descomprimidas en modo desarrollador.
+---
 
-## Seguridad y notas
+## Permissions
 
-- El código de usuario se ejecuta mediante `chrome.scripting.executeScript` en `world: "MAIN"`.
-- Los scripts se asocian a URL exacta (normalizada sin hash y sin trailing slash).
-- No se incluyen secretos en el repositorio.
+JSLoader uses the following permissions:
+
+- `storage` — persist scripts locally.
+- `scripting` — inject script code into tabs.
+- `activeTab` / `tabs` — detect current tab URL and react to tab updates.
+- `host_permissions: <all_urls>` — allow matching and execution on user-targeted sites.
+
+---
+
+## Security Model
+
+- Manifest V3 architecture with service worker background script.
+- Extension pages restricted by CSP in `manifest.json`.
+- Script data stored locally (`chrome.storage.local`).
+- URL matching is exact (normalized URL, excluding hash and trailing slash).
+- Execution occurs in page context (`world: "MAIN"`), enabling DOM access for automation.
+
+> Important: user scripts run with the privileges of the visited page context. Only install scripts you trust.
+
+---
+
+## Development Notes
+
+- No build step is required; this is a plain HTML/CSS/JS extension.
+- Keep files ASCII-friendly where possible.
+- Reload the extension after changes to test updates.
+
+---
+
+## Troubleshooting
+
+### Script does not run
+
+- Verify the script is enabled.
+- Confirm the configured URL exactly matches the current page URL.
+- Check DevTools Console for runtime errors.
+
+### Script runs too early (SPA pages)
+
+- Set a delay in seconds on the script.
+- Use `waitForElement(...)` for specific DOM targets.
+
+### Changes are not reflected
+
+- Reload JSLoader from `chrome://extensions`.
+- Refresh the target page.
