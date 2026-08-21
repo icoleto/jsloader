@@ -1,5 +1,9 @@
 # JSLoader
 
+<p align="center">
+  <img src="icons/icon128.png" alt="JSLoader logo" width="128" height="128" />
+</p>
+
 JSLoader is a Chrome extension (Manifest V3) for storing and running custom JavaScript snippets per exact URL.
 
 It is designed for power users who need lightweight page automation, DOM tweaks, and workflow shortcuts on specific websites.
